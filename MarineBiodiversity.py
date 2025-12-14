@@ -5,6 +5,7 @@ variables = pd.read_csv("Data/Diversity_data_with_biooracle_2010.csv")
 
 df = pd.read_csv("Data/Diversity_data_with_biooracle_2010.csv")
 print(df)
+df.columns
 
 df = df.rename(columns={
     'marine_species_richness': 'SR',
@@ -20,7 +21,7 @@ PD = df[['PD', 'long', 'lat']]
 
 import plotly.express as px
 import plotly.io as pio
-pio.renderers.default = "browser"
+pio.renderers.default = "notebook"
 
 
 fig = px.scatter_geo(
@@ -52,5 +53,33 @@ fig = px.scatter_geo(
     hover_name="PD",  
     projection="natural earth"    # mooie wereldkaart
 )
+fig.show()
+
+
+
+temp = df[['long', 'lat', 'T_mean']]
+print(temp)
+
+
+
+fig = px.scatter_geo(
+    temp,
+    lat="lat",
+    lon="long",
+    color="T_mean",
+    color_continuous_scale="thermal",
+    title="Gemiddelde temperatuur (T_mean)"
+)
+
+fig.update_layout(
+    geo=dict(
+        projection_type="natural earth",
+        showland=True,
+        landcolor="rgb(240,240,240)",
+        showocean=True,
+        oceancolor="rgb(210,230,255)"
+    )
+)
+
 fig.show()
 
