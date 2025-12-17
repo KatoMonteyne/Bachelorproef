@@ -7,6 +7,11 @@ df = pd.read_csv("Data/Diversity_data_with_biooracle_2010.csv")
 print(df)
 df.columns
 
+df2 = pd.read_csv("Data/Diversity_data_with_env.csv")
+df2.columns
+df2["MPA"].unique()
+
+
 df = df.rename(columns={
     'marine_species_richness': 'SR',
     'co1_genetic_diversity_mean': 'GD',
@@ -82,4 +87,131 @@ fig.update_layout(
 )
 
 fig.show()
+
+
+
+O2 = df[['long', 'lat', 'o2_mean']]
+
+fig = px.scatter_geo(
+    O2,
+    lat="lat",
+    lon="long",
+    color="o2_mean",
+    color_continuous_scale="Viridis",
+    projection = "natural earth",
+    title="O2-concentratie",
+)
+
+fig.update_traces(marker=dict(size=5))
+
+fig.update_layout(
+    coloraxis_colorbar=dict(
+        title="O2 (mmol/m3)"
+    )
+)
+
+
+fig.show()
+
+
+
+salinity = df[['long', 'lat', 'salinity_mean']]
+
+
+fig = px.scatter_geo(
+    salinity,
+    lat="lat",
+    lon="long",
+    color="salinity_mean",
+    color_continuous_scale="Turbo",  # goede schaal voor salinity
+    projection="natural earth",
+    title="salinity"
+)
+
+fig.update_traces(marker=dict(size=5))
+
+fig.update_layout(
+    coloraxis_colorbar=dict(
+        title="Salinity"
+    )
+)
+
+fig.show()
+
+
+
+pH = df[['long', 'lat', 'ph_mean']]
+
+fig = px.scatter_geo(
+    pH,
+    lat="lat",
+    lon="long",
+    color="ph_mean",
+    color_continuous_scale="RdBu_r",  # goed voor pH (laag ↔ hoog)
+    projection="natural earth",
+    title="pH"
+)
+
+fig.update_traces(marker=dict(size=5))
+
+fig.update_layout(
+    coloraxis_colorbar=dict(
+        title="pH"
+    )
+)
+
+fig.show()
+
+
+
+MPA = df2[['long_deg', 'lat_deg', 'MPA']]
+
+fig = px.scatter_geo(
+    MPA,
+    lat="lat_deg",
+    lon="long_deg",
+    color="MPA",
+    color_continuous_scale="Viridis",
+    projection="natural earth",
+    title="MPA"
+)
+
+fig.update_traces(marker=dict(size=6))
+
+fig.update_layout(
+    coloraxis_colorbar=dict(
+        title="MPA"
+    )
+)
+
+fig.show()
+
+
+
+
+koraal = df2[['long_deg', 'lat_deg', 'Coral']]
+
+fig = px.scatter_geo(
+    koraal,
+    lat="lat_deg",
+    lon="long_deg",
+    color="Coral",  # nu numeriek
+    color_continuous_scale="Viridis",  # mooie continue kleur
+    projection="natural earth",
+    title="Koraal"
+)
+
+fig.update_traces(marker=dict(size=6))
+
+fig.update_layout(
+    coloraxis_colorbar=dict(
+        title="Koraal"
+    )
+)
+
+fig.show()
+
+
+
+
 
