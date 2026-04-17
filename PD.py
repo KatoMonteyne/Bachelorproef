@@ -15,28 +15,46 @@ sns.set_theme(style="whitegrid")
 
 data = pd.read_csv("Data/Diversity_data_with_biooracle_2010.csv")
 
-print(f"Diversity_data_with_env:             {data.shape}")
+
+data2 = pd.read_csv("Data/Diversity_data_with_env.csv")
+data2.columns
+data2.head()
+
+data_samen = data.merge(data2, on = ["long_deg", "lat_deg"])
+data_samen.tail()
+data_samen.columns
+
+print(f"Diversity_data_with_env:             {data_samen.shape}")
 # de data heeft 2452 rijen en 75 kolommen
+# de data samen heeft 2452 rijen en 106  kolommen 
+
 
 data.head()
 data.columns
 
-target = "PD" # Geselecteerde biodiversiteitsmaat om te voorspellen.
+target = "PD_x" # Geselecteerde biodiversiteitsmaat om te voorspellen.
 
-feature_cols = [ # Dit zijn de variabelen die we hier selecteren om de biodiversiteit te voorspellen.               
-    "clt_mean",            
-    "dfe_max",
-    "o2_min",
+feature_cols = [ # Dit zijn de variabelen die we hier selecteren om de biodiversiteit te voorspellen.
+    "clt_mean",        
+    "currentdirection_mean",
+    "currentvelocity_mean",
+    "dfe_mean",
+    "mlotst_mean",
+    "o2_mean",
+    "par_mean",
+    "phyc_mean",
     "ph_mean",
-    "ph_min",
-    "po4_mean", 
-    "salinity_ltmax",
+    "po4_mean",
+    "salinity_mean",
     "si_mean",
     "tas_mean",
-    "T_ltmax"
+    "terrain_characteristics_bea_mean",
+    "terrain_characteristics_slope",
+    "T_mean", 
+    "LandDist",
 ]
 
-df = data[[target] + feature_cols].copy()
+df = data_samen[[target] + feature_cols].copy()
 print(f"Shape before cleaning: {df.shape}")  
 df.describe() # geeft een beschrijvende statistiek van de variabelen 
 
@@ -142,8 +160,8 @@ fig, ax = plt.subplots(figsize=(6, 6))
 ax.scatter(y_test, y_pred, s=10, alpha=0.4)
 lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
 ax.plot(lims, lims, "r--", linewidth=1)
-ax.set_xlabel("Observed GD")
-ax.set_ylabel("Predicted GD")
+ax.set_xlabel("Observed PD")
+ax.set_ylabel("Predicted PD")
 ax.set_title(f"Observed vs Predicted  (R² = {r2:.3f})")
 ax.set_aspect("equal")
 plt.tight_layout()
@@ -157,6 +175,7 @@ fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 axes[0].scatter(y_pred, residuals, s=10, alpha=0.4)
 axes[0].axhline(0, color="red", linestyle="--")
 axes[0].set_xlabel("Predicted GD")
+axes[0].set_xlabel("Predicted PD")
 axes[0].set_ylabel("Residual")
 axes[0].set_title("Residuals vs Predicted")
 
@@ -205,3 +224,96 @@ spatial_cv = cross_val_score(
 )
 print("Spatial  5-fold CV R² scores:", np.round(spatial_cv, 4))
 print(f"Mean R²: {spatial_cv.mean():.4f}  ±  {spatial_cv.std():.4f}")
+
+
+
+
+
+###################################
+# model maken met minder variabelen
+###################################
+
+target = "PD_x" # Geselecteerde biodiversiteitsmaat om te voorspellen.
+
+feature_cols = [ # Dit zijn de variabelen die we hier selecteren om de biodiversiteit te voorspellen.
+    "chl_mean",      # variabelen kiezen die invloed gaan hebben op de biodiversiteit  
+    "clt_mean",        
+    "currentdirection_mean",
+    "currentvelocity_mean",
+    "dfe_mean",
+    "kdpar_mean",
+    "mlotst_mean",
+    "no3_mean",
+    "o2_mean",
+    "par_mean",
+    "phyc_mean",
+    "ph_mean",
+    "po4_mean",
+    "salinity_mean",
+    "siconc_mean",
+    "sithick_mean",
+    "si_mean",
+    "tas_mean",
+    "terrain_characteristics_aspect",
+    "terrain_characteristics_bea_mean",
+    "terrain_characteristics_rug",
+    "terrain_characteristics_slope",
+    "terrain_characteristics_topo",
+    "T_mean", 
+    "DepthMean",
+    "LandDist",
+    "Shelf",
+    "Slope",
+    "Abyssal",
+    "Seamount",
+]
+
+df = data_samen[[target] + feature_cols].copy()
+print(f"Shape before cleaning: {df.shape}")  
+df.describe()
+
+df.replace(-9999.0, np.nan, inplace=True)
+df.replace(-9999, np.nan, inplace=True)
+
+missing = df.isna().sum() # Ontbrekende waarden tellen.
+print("Missing values per column:\n")
+print(missing[missing > 0])
+
+df.dropna(inplace=True) # Ontbrekende waarden verwijderen.
+print(f"\nShape after dropping rows with NaN: {df.shape}")
+
+X = df[feature_cols]
+y = df[target]
+
+from sklearn.feature_selection import RFECV
+
+# Random Forest
+estimator = RandomForestRegressor(
+    n_estimators=800,
+    max_depth=20,
+    min_samples_leaf=1,
+    random_state=42,
+    n_jobs=-1
+)
+
+# RFECV met spatial CV + RMSE
+selector = RFECV(
+    estimator,
+    step=1,
+    cv=gkf,
+    scoring="neg_root_mean_squared_error",
+    n_jobs=-1
+)
+
+selector.fit(X, y, groups=spatial_blocks)
+
+print(f"Optimal number of features: {selector.n_features_}")
+
+selected_features_RFECV = X.columns[selector.support_]
+print("Selected features:", list(selected_features_RFECV))
+
+# er blijven nog 17 variabelen over 
+# clt_mean, currentdirection_mean, currentvelocity_mean, dfe_mean,
+# mlotst_mean, o2_mean, par_mean, phyc_mean, ph_mean, po4_mean, salinity_mean, si_mean, 
+# tas_mean, terrain_characteristics_bea_mean, terrain_characteristics_slope, 
+# T_mean, LandDist
