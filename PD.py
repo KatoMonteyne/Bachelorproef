@@ -316,4 +316,4 @@ print("Selected features:", list(selected_features_RFECV))
 # clt_mean, currentdirection_mean, currentvelocity_mean, dfe_mean,
 # mlotst_mean, o2_mean, par_mean, phyc_mean, ph_mean, po4_mean, salinity_mean, si_mean, 
 # tas_mean, terrain_characteristics_bea_mean, terrain_characteristics_slope, 
-# T_mean, LandDi
+# T_mean, LandDist
