@@ -8,20 +8,16 @@ Academiejaar: 2025 – 2026
 Het doel van deze bachelorproef is het onderzoeken van de impact van klimaatverandering op de mariene biodiversiteit met behulp van machinelearningmodellen. Deze repository bevat de scripts gebruikt voor het onderzoek.
 
 ## Structuur van de repository
-- `Data inladen/`  
-  Deze map bevat scripts die gebruikt worden om toekomstige data afkomstig van Bio-ORACLE
-  op te slaan als CSV-bestanden. Voor elke biodiversiteitsmaat wordt een afzonderlijk script voorzien.
-
 - `Data/`  
   Deze map bevat alle gebruikte datasets.  
   `Diversity_data_with_biooracle_2010.csv` bevat de huidige Bio-ORACLE-data, geannoteerd met de
   biodiversiteitsmaten.  
   `Diversity_data_with_env.csv` bevat de huidige AquaMaps-data, geannoteerd met de
   biodiversiteitsmaten. <br>
-  De overige CSV-bestanden zijn gegenereerd met behulp van de scripts in `Data inladen/`.
-
-- `Kaartjes_MarineBiodiversity.py`  
-  Dit script bevat de code voor het genereren van kaarten van de huidige biodiversiteitsmaten.
+  De overige CSV-bestanden zijn gegenereerd met behulp van notebook `Data Bio-ORACLE inladen.ipynb`.
+  
+- `Data Bio-ORACLE inladen.ipynb`
+  Deze notebook wordt gebruikt om de toekomstige data afkomstig van Bio-ORACLE in te laden en om te zetten naar CSV-bestanden.
 
 - `Model_FD.ipynb`  
   Deze notebook bevat de code voor het opstellen van modellen voor fylogenetische diversiteit (FD),
