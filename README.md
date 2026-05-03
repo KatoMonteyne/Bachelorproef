@@ -32,7 +32,7 @@ Het doel van deze bachelorproef is het onderzoeken van de impact van klimaatvera
   volgens de werkwijze beschreven in de bachelorproef.
  
 ## Gebruik
-De code werd ontwikkeld in Python. <br>
+De code werd ontwikkeld in Python en uitgevoerd in Jupyter notebooks. <br>
 Benodigde pakketten worden rechtstreeks in de scripts ingeladen. <br>
 Het volstaat om de drie notebooks  
 `Model_FD.ipynb`, `Model_GD.ipynb` en `Model_SR.ipynb`  
